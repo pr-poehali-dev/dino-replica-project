@@ -145,7 +145,10 @@ function Game({ soundOn, musicOn, onExit }: { soundOn: boolean; musicOn: boolean
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext('2d')!;
-    const hero = new Image(); hero.crossOrigin = 'anonymous'; hero.src = HERO_SRC;
+    const hero = new Image();
+    let heroReady = false;
+    hero.onload = () => { heroReady = true; };
+    hero.src = HERO_SRC;
 
     const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     const audioCtx = AC ? new AC() : null;
@@ -274,7 +277,7 @@ function Game({ soundOn, musicOn, onExit }: { soundOn: boolean; musicOn: boolean
 
       const hy = dinoY - 60, hx = 90;
       const runBob = onGround ? Math.sin(frame * 0.3) * 3 : 0;
-      if (hero.complete && hero.naturalWidth) {
+      if (heroReady) {
         ctx.save();
         ctx.beginPath(); ctx.arc(hx + 30, hy + 30 + runBob, 30, 0, Math.PI * 2); ctx.closePath(); ctx.clip();
         ctx.drawImage(hero, hx, hy + runBob, 60, 60);
